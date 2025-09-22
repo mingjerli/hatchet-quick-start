@@ -1,11 +1,13 @@
-from hatchet_sdk import Context, EmptyModel
-
+from hatchet_sdk import Context
 from hatchet_client import hatchet
+from pydantic import BaseModel
 
 
-# Declare the task to run
-@hatchet.task(name="first-workflow")
-def my_task(input: EmptyModel, ctx: Context) -> dict[str, int]:
+class SimpleOutput(BaseModel):
+    meaning_of_life: int
+
+
+@hatchet.task(name="first-task")
+def my_task(ctx: Context) -> SimpleOutput:
     print("executed task")
-
-    return {"meaning_of_life": 42}
+    return SimpleOutput(meaning_of_life=42)
