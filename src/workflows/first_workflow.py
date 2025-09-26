@@ -8,6 +8,8 @@ class SimpleOutput(BaseModel):
 
 
 @hatchet.task(name="first-task")
-def my_task(ctx: Context) -> SimpleOutput:
+def my_task(workflow_input, ctx: Context) -> SimpleOutput:
     print("executed task")
-    return SimpleOutput(meaning_of_life=42)
+    print(f"workflow input: {workflow_input}")
+    print(f"context: {ctx}")
+    return SimpleOutput(meaning_of_life=542)
