@@ -18,23 +18,23 @@ services:
       timeout: 10s
       retries: 5
       start_period: 10s
-  rabbitmq:
-    image: "rabbitmq:3-management"
-    hostname: "rabbitmq"
-    ports:
-      - "5673:5672" # RabbitMQ
-      - "15673:15672" # Management UI
-    environment:
-      RABBITMQ_DEFAULT_USER: "user"
-      RABBITMQ_DEFAULT_PASS: "password"
-    volumes:
-      - "hatchet_rabbitmq_data:/var/lib/rabbitmq"
-      - "hatchet_rabbitmq.conf:/etc/rabbitmq/rabbitmq.conf" # Configuration file mount
-    healthcheck:
-      test: ["CMD", "rabbitmqctl", "status"]
-      interval: 10s
-      timeout: 10s
-      retries: 5
+  # rabbitmq:
+  #   image: "rabbitmq:3-management"
+  #   hostname: "rabbitmq"
+  #   ports:
+  #     - "5673:5672" # RabbitMQ
+  #     - "15673:15672" # Management UI
+  #   environment:
+  #     RABBITMQ_DEFAULT_USER: "user"
+  #     RABBITMQ_DEFAULT_PASS: "password"
+  #   volumes:
+  #     - "hatchet_rabbitmq_data:/var/lib/rabbitmq"
+  #     - "hatchet_rabbitmq.conf:/etc/rabbitmq/rabbitmq.conf" # Configuration file mount
+  #   healthcheck:
+  #     test: ["CMD", "rabbitmqctl", "status"]
+  #     interval: 10s
+  #     timeout: 10s
+  #     retries: 5
   migration:
     image: ghcr.io/hatchet-dev/hatchet/hatchet-migrate:latest
     command: /hatchet/hatchet-migrate
@@ -48,7 +48,8 @@ services:
     command: /hatchet/hatchet-admin quickstart --skip certs --generated-config-dir /hatchet/config --overwrite=false
     environment:
       DATABASE_URL: "postgres://hatchet:hatchet@postgres:5432/hatchet"
-      SERVER_MSGQUEUE_RABBITMQ_URL: amqp://user:password@rabbitmq:5672/
+      SERVER_MSGQUEUE_KIND: postgres
+      # SERVER_MSGQUEUE_RABBITMQ_URL: amqp://user:password@rabbitmq:5672/
       SERVER_AUTH_COOKIE_DOMAIN: localhost:8080
       SERVER_AUTH_COOKIE_INSECURE: "t"
       SERVER_GRPC_BIND_ADDRESS: "0.0.0.0"
@@ -62,8 +63,8 @@ services:
     depends_on:
       migration:
         condition: service_completed_successfully
-      rabbitmq:
-        condition: service_healthy
+      # rabbitmq:
+      #   condition: service_healthy
       postgres:
         condition: service_healthy
   hatchet-engine:
@@ -117,7 +118,7 @@ services:
 
 volumes:
   hatchet_postgres_data:
-  hatchet_rabbitmq_data:
+  # hatchet_rabbitmq_data:
   hatchet_rabbitmq.conf:
   hatchet_config:
   hatchet_certs:
